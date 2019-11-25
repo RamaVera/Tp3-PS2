@@ -31,6 +31,7 @@ sigma_a = 1;
 if (strcmp(toEvaluate,'position'))
     C=[I,O,O];
     R = diag([sigma_p^2 sigma_p^2]);
+    etha = mvnrnd(zeros(length(R),1),R,final)';
 end
 if (strcmp(toEvaluate,'velocity'))
   	C=[O,I,O];
@@ -49,7 +50,7 @@ Qd = [q*h^5/20,q*h^4/8,q*h^3/6;q*h^4/8,q*h^3/3,q*h^2/2;q*h^3/6,q*h^2/2,q*h];
 
 %Condiciones Iniciales
 x0_0 = [40 -200 0 0 0 0]';
-P0_0 = diag([10^4 10^4 10^2 10^2 10 10 ]);
+P0_0 = diag([10^4 10^8 10^2 10^2 10 10 ]);
 
 %Test de Observabilidad
 if (rank(obsv(Ad,C))== length(Ad))
@@ -71,9 +72,8 @@ for k = 1:final
         P_kminus_kminus = P_k_k;
     end
     
-    %Valor de la medicion
-    etha = mvnrnd(zeros(length(R),1),R)';
-    Yk = p(k)+ 0*etha;
+    %Valor de la medicion 
+    Yk = [p(k,:)]'+ 0*etha(:,k);
     %Ykplus = v(k);
     %Ykplus = [p(k);v(k)];
 
