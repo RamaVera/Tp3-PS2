@@ -37,33 +37,36 @@ Ad = expm(A*h);
 Qd = [q*h^5/20,q*h^4/8,q*h^3;q*h^4/8,q*h^3/3,q*h^2/2;q*h^3/6,q*h^2/2,q*h];
 
 x0_0 = [40 -200 0 0 0 0]';
-P0_0=diag([10^6 10^6 100^2 100^2 10^2 10^2 ]);
+P0_0 = diag([10^4 10^4 10^2 10^2 10 10 ]);
 
-%Inicializacion
-
-X_k_k = x0_0;
-P_k_k = P0_0;
-
-for k = 2:final
+for k = 1:final
     
+    %Inicializacion
+    if k == 1
+        X_kminus_kminus = x0_0
+        P_kminus_kminus = P0_0
+    else
+        X_kminus_kminus = X_k_k
+        P_kminus_kminus = P_k_k
+    end
+    
+    %Valor de la medicion
     etha = mvnrnd(zeros(2,1),R)';
-    Ykplus = p(k)+ etha;
+    Yk = p(k)+ etha
     %Ykplus = v(k);
     %Ykplus = [p(k);v(k)];
-    
+
     %Prediccion
-    
-    X_kplus_k = Ad * X_k_k ;
-    P_kplus_k = Ad * P_k_k * Ad' + Qd ;
+    X_k_kminus = Ad * X_kminus_kminus 
+    P_k_kminus = Ad * P_kminus_kminus * Ad' + Qd 
     
     %Actualizacion
-    
-    K_kplus =  P_kplus_k * C' * inv( C * P_kplus_k * C' + R);
-    X_kplus_kplus =  X_kplus_k + K_kplus * (Ykplus - C * X_kplus_k );
-    P_kplus_kplus = (eye(size(K_kplus*C)) - K_kplus*C) * P_kplus_k ;
+    K_k =  P_k_kminus * C' * inv( C * P_k_kminus * C' + R);
+    X_k_k =  X_k_kminus + K_k * (Yk - C * X_k_kminus )
+    P_k_k = (eye(size(K_k*C)) - K_k*C) * P_k_kminus 
 
-    Xsave = [Xsave ;(X_kplus_kplus)' ];
-    Ysave = [Ysave ;(C * X_kplus_kplus)'];
+    Xsave = [Xsave ;(X_kminus_kminus)' ]
+    Ysave = [Ysave ;(C * X_kminus_kminus)']
 end
 
 
@@ -71,16 +74,16 @@ figure
 
 subplot(2,1,1)
 hold on
-plot(1:final-1,Ysave(:,1))
+plot(1:final,Ysave(:,1))
 plot(1:final,p(:,1))
+legend({'Estimacion','Posicion Medida'})
+
 
 subplot(2,1,2)
 hold on
-plot(1:final-1,Ysave(:,2))
+plot(1:final,Ysave(:,2))
 plot(1:final,p(:,2))
 legend({'Estimacion','Posicion Medida'})
-
-figure(2)
 
 
 
