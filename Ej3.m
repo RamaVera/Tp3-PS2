@@ -72,7 +72,7 @@ if (strcmp(Case,'d'))
     x0_0 = [500 -1000 0 0 0 0]';
     c = 10^-5;
 end
-P0_0 = c * diag([10^4 10^8 10^2 10^2 10 10 ]);
+P0_0 = c * diag([10^4 10^4 10^2 10^2 10 10 ]);
 
 %Test de Observabilidad
 L = rank(obsv(Ad,C));

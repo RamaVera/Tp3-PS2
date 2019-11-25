@@ -5,10 +5,11 @@ clc
 load('tp3_kalman.mat');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-toEvaluate= 'position';
-%toEvaluate= 'velocity';
-%toEvaluate= 'aceleration';
-%toEvaluate= 'position and velocity';
+toEvaluate = 'position'; %ALWAYS
+
+%Choose case
+Case = 'a';
+%Case = 'b';
 
 %Auxiliares
 I = [1,0;0,1];
@@ -16,6 +17,7 @@ O = zeros(size(I));
 O_6 =[O,O,O;O,O,O;O,O,O];
 final = length(p) ;
 Xsave = [];
+Xpred = [];
 E = [];
 
 %Parametros del modelo continuo
@@ -30,21 +32,15 @@ sigma_a = sqrt(1);
 
 if (strcmp(toEvaluate,'position'))
     C=[I,O,O];
-    R = diag([sigma_p^2 sigma_p^2]);
+    if (strcmp(Case,'a'))
+        r = 10^3;
+    end
+    if (strcmp(Case,'b'))
+        r = 10^-3;
+    end
+    R =r * diag([sigma_p^2 sigma_p^2]);      
 end
-if (strcmp(toEvaluate,'velocity'))
-  	C=[O,I,O];
-    R = diag([sigma_v^2 sigma_v^2]);
-end
-if (strcmp(toEvaluate,'aceleration'))
-  	C=[O,O,I];
-    R = diag([sigma_a^2 sigma_a^2]);
-end
-% if (strcmp(toEvaluate,'position and velocity'))
-%   	C=[I,O,O;O,I,O];
-%     R = diag([sigma_p^2 sigma_p^2 sigma_v^2 sigma_v^2]);
-%  
-% end
+
 etha = mvnrnd(zeros(length(R),1),R,final)';
 
 %Discretizacion
@@ -102,64 +98,22 @@ for k = 1:final
     %P_k_k = (eye(size(K_k*C)) - K_k * C)* P_k_kminus * (eye(size(K_k*C)) - K_k*C)' +  K_k * R * K_k';
 
     Xsave = [Xsave (X_kminus_kminus) ];
+    Xpred = [Xpred X_k_kminus];
     E =[E (Yk - C * X_k_kminus )];
 end
 %% Comparacion de Estados y Estimaciones
 
-%Posicion en X
-figure(1)
-subplot(2,1,1)
-hold on
-plot(1:final,Xsave(1,:))
-plot(1:final,p(:,1))
-legend({'Estimacion','Posicion Medida'})
-
-%Posicion en Y
-subplot(2,1,2)
-hold on
-plot(1:final,Xsave(2,:))
-plot(1:final,p(:,2))
-legend({'Estimacion','Posicion Medida'})
-
-%Velocidad en X
-figure(2)
-subplot(2,1,1)
-hold on
-plot(1:final,Xsave(3,:))
-plot(1:final,v(:,1))
-legend({'Estimacion','Posicion Medida'})
-
-%Velocidad en Y
-subplot(2,1,2)
-hold on
-plot(1:final,Xsave(4,:))
-plot(1:final,v(:,2))
-legend({'Estimacion','Posicion Medida'})
-
-%Aceleracion en X
-figure(3)
-subplot(2,1,1)
-hold on
-plot(1:final,Xsave(5,:))
-plot(1:final,a(:,1))
-legend({'Estimacion','Posicion Medida'})
-
-%Aceleracion en Y
-subplot(2,1,2)
-hold on
-plot(1:final,Xsave(6,:))
-plot(1:final,a(:,2))
-legend({'Estimacion','Posicion Medida'})
 
 %Trayectoria
-figure (4)
+figure (1)
 hold on
 plot(Xsave(1,:),Xsave(2,:))
+plot(Xpred(1,:),Xpred(2,:))
 plot(p(:,1),p(:,2))
-legend({'Estimacion','Posicion Medida'})
+legend({'Medida','Estimacion','Real'})
 
 %Autocorrelacion de la innovacion
-figure(5)
+figure(2)
 subplot(2,1,1)
 [c,lags] = xcov(E(1,:));
 stem(lags,c)
