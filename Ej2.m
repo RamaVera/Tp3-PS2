@@ -5,9 +5,9 @@ clc
 load('tp3_kalman.mat');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%toEvaluate= 'position';
+toEvaluate= 'position';
 %toEvaluate= 'velocity';
-toEvaluate= 'aceleration';
+%toEvaluate= 'aceleration';
 %toEvaluate= 'position and velocity';
 
 %Auxiliares
