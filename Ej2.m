@@ -5,9 +5,9 @@ clc
 load('tp3_kalman.mat');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-toEvaluate= 'position';
+%toEvaluate= 'position';
 %toEvaluate= 'velocity';
-%toEvaluate= 'aceleration';
+toEvaluate= 'aceleration';
 %toEvaluate= 'position and velocity';
 
 %Auxiliares
@@ -113,6 +113,7 @@ hold on
 plot(1:final,Xsave(1,:))
 plot(1:final,p(:,1))
 legend({'Estimacion','Posicion Medida'})
+title('Posición en x')
 
 %Posicion en Y
 subplot(2,1,2)
@@ -120,6 +121,8 @@ hold on
 plot(1:final,Xsave(2,:))
 plot(1:final,p(:,2))
 legend({'Estimacion','Posicion Medida'})
+title('Posición en y')
+saveas(gcf, 'posicion.png')
 
 %Velocidad en X
 figure(2)
@@ -128,6 +131,7 @@ hold on
 plot(1:final,Xsave(3,:))
 plot(1:final,v(:,1))
 legend({'Estimacion','Posicion Medida'})
+title('Velocidad en x')
 
 %Velocidad en Y
 subplot(2,1,2)
@@ -135,6 +139,8 @@ hold on
 plot(1:final,Xsave(4,:))
 plot(1:final,v(:,2))
 legend({'Estimacion','Posicion Medida'})
+title('Velocidad en y')
+saveas(gcf, 'velocidad.png')
 
 %Aceleracion en X
 figure(3)
@@ -143,6 +149,7 @@ hold on
 plot(1:final,Xsave(5,:))
 plot(1:final,a(:,1))
 legend({'Estimacion','Posicion Medida'})
+title('Aceleracion en x')
 
 %Aceleracion en Y
 subplot(2,1,2)
@@ -150,22 +157,42 @@ hold on
 plot(1:final,Xsave(6,:))
 plot(1:final,a(:,2))
 legend({'Estimacion','Posicion Medida'})
+title('Aceleracion en y')
+saveas(gcf, 'aceleracion.png')
 
 %Trayectoria
 figure (4)
 hold on
 plot(Xsave(1,:),Xsave(2,:))
 plot(p(:,1),p(:,2))
-legend({'Estimacion','Posicion Medida'})
+plot(p(:,1)' + etha(1,:),p(:,2)' + etha(2,:), 'linestyle', 'none', ...
+    'marker', '.')
+legend({'Estimacion','Posicion real', 'Posicion medida'})
+title('Trayectoria')
+saveas(gcf, 'trayectoria.png')
 
 %Autocorrelacion de la innovacion
 figure(5)
+title('Autocorrelacion de la innovación')
 subplot(2,1,1)
 [c,lags] = xcov(E(1,:));
 stem(lags,c)
 subplot(2,1,2)
 [c,lags] = xcov(E(2,:));
 stem(lags,c)
+saveas(gcf, 'innovacion.png')
+
+%Trayectoria con zoom
+figure (6)
+hold on
+plot(Xsave(1,:),Xsave(2,:))
+plot(p(:,1),p(:,2))
+plot(p(:,1)' + etha(1,:),p(:,2)' + etha(2,:), 'linestyle', 'none', ...
+    'marker', '.')
+legend({'Estimacion','Posicion real', 'Posicion medida'})
+title('Trayectoria - Con aumento')
+xlim([-5000 -3000])
+saveas(gcf, 'trayectoria_aumento.png')
 
 
 
