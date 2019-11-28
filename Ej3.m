@@ -9,9 +9,9 @@ toEvaluate= 'position'; %ALWAYS
 
 %Choose case
 %Case='a';
-Case='b';
+%Case='b';
 %Case='c';
-%Case='d';
+Case='d';
 
 %Auxiliares
 I = [1,0;0,1];
@@ -35,14 +35,14 @@ if (strcmp(toEvaluate,'position'))
     C=[I,O,O];
     R = diag([sigma_p^2 sigma_p^2]);
 end
-if (strcmp(toEvaluate,'velocity'))
-  	C=[O,I,O];
-    R = diag([sigma_v^2 sigma_v^2]);
-end
-if (strcmp(toEvaluate,'aceleration'))
-  	C=[O,O,I];
-    R = diag([sigma_a^2 sigma_a^2]);
-end
+% if (strcmp(toEvaluate,'velocity'))
+%   	C=[O,I,O];
+%     R = diag([sigma_v^2 sigma_v^2]);
+% end
+% if (strcmp(toEvaluate,'aceleration'))
+%   	C=[O,O,I];
+%     R = diag([sigma_a^2 sigma_a^2]);
+% end
 % if (strcmp(toEvaluate,'position and velocity'))
 %   	C=[I,O,O;O,I,O];
 %     R = diag([sigma_p^2 sigma_p^2 sigma_v^2 sigma_v^2]);
@@ -99,15 +99,15 @@ for k = 1:final
     if (strcmp(toEvaluate,'position'))
         Yk = [p(k,:)]'+ etha(:,k);
     end
-    if (strcmp(toEvaluate,'velocity'))
-        Yk = [v(k,:)]'+ etha(:,k);
-    end
-    if (strcmp(toEvaluate,'aceleration'))
-        Yk = [a(k,:)]'+ etha(:,k);
-    end
-    if (strcmp(toEvaluate,'position and velocity'))
-        Yk = [p(k,:)' ; v(k,:)']+ etha(:,k);
-    end
+%     if (strcmp(toEvaluate,'velocity'))
+%         Yk = [v(k,:)]'+ etha(:,k);
+%     end
+%     if (strcmp(toEvaluate,'aceleration'))
+%         Yk = [a(k,:)]'+ etha(:,k);
+%     end
+%     if (strcmp(toEvaluate,'position and velocity'))
+%         Yk = [p(k,:)' ; v(k,:)']+ etha(:,k);
+%     end
 
     %Prediccion
     X_k_kminus = Ad * X_kminus_kminus ;
@@ -125,11 +125,12 @@ end
 %% Comparacion de Estados y Estimaciones
 
 %Error posicion en X
-figure(1)
+f=figure(1);
 subplot(2,1,1)
 hold on
 grid on
 plot(1:final, Xsave(1,:) - p(:,1)')
+
 
 %Error posicion en Y
 subplot(2,1,2)
@@ -137,21 +138,91 @@ grid on
 hold on
 plot(1:final, Xsave(2,:)- p(:,2)')
 
+set(gcf, 'Position', get(0, 'Screensize'));
+saveas(f,['ErrorPosicion','_',Case,'.png'],'png')
+
+%Zoom en el error de posicion
+    %Error posicion en X
+    if (Case == 'b')
+    f=figure(2);
+    subplot(2,1,1)
+    hold on
+    grid on
+    plot(1:final, Xsave(1,:) - p(:,1)')
+    ylim([-50 50])
+    
+    newLim = get(gca,'YLim'); 
+    newx = linspace(newLim(1), newLim(2), 9); 
+    set(gca,'YTick', newx); 
+
+
+    %Error posicion en Y
+    subplot(2,1,2)
+    grid on
+    hold on
+    plot(1:final, Xsave(2,:)- p(:,2)')
+    ylim([-50 50])
+    newLim = get(gca,'YLim'); 
+    newx = linspace(newLim(1), newLim(2), 9); 
+    set(gca,'YTick', newx);
+
+    set(gcf, 'Position', get(0, 'Screensize'));
+    saveas(f,['ErrorPosicion','_',Case,'_bis','.png'],'png')
+    
+    end
+ if (Case == 'c' || Case == 'd')
+    f=figure(2);
+    subplot(2,1,1)
+    hold on
+    grid on
+    plot(1:final, Xsave(1,:) - p(:,1)')
+    ylim([-8 37])
+    
+    newLim = get(gca,'YLim'); 
+    newx = linspace(newLim(1), newLim(2), 9); 
+    set(gca,'YTick', newx); 
+
+
+    %Error posicion en Y
+    subplot(2,1,2)
+    grid on
+    hold on
+    plot(1:final, Xsave(2,:)- p(:,2)')
+    ylim([-30 30])
+    newLim = get(gca,'YLim'); 
+    newx = linspace(newLim(1), newLim(2), 9); 
+    set(gca,'YTick', newx);
+
+    set(gcf, 'Position', get(0, 'Screensize'));
+    saveas(f,['ErrorPosicion','_',Case,'_bis','.png'],'png')
+    
+    end
+
+
 %Trayectoria
-figure (4)
+f=figure (4);
 hold on
 plot(Xsave(1,:),Xsave(2,:))
 plot(p(:,1),p(:,2))
 legend({'Estimacion','Posicion Medida'})
 
+set(gcf, 'Position', get(0, 'Screensize'));
+saveas(f,['Trayectoria','_',Case,'.png'],'png')
+
+
 %Autocorrelacion de la innovacion
-figure(5)
+f=figure(5);
 subplot(2,1,1)
 [c,lags] = xcov(E(1,:));
 stem(lags,c)
 subplot(2,1,2)
 [c,lags] = xcov(E(2,:));
 stem(lags,c)
+
+set(gcf, 'Position', get(0, 'Screensize'));
+saveas(f,['AutocorrelacionInovacion','_',Case,'.png'],'png')
+
+
 
 
 
