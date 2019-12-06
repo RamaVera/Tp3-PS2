@@ -8,8 +8,8 @@ load('tp3_kalman.mat');
 toEvaluate = 'position'; %ALWAYS
 
 %Choose case
-Case = 'a';
-%Case = 'b';
+%Case = 'a';
+Case = 'b';
 
 %Auxiliares
 I = [1,0;0,1];
@@ -107,20 +107,25 @@ end
 %Trayectoria
 figure (1)
 hold on
+plot(p(:,1)' + etha(1,:),p(:,2)' + etha(2,:), 'linestyle', 'none', ...
+    'marker', '.')
 plot(Xsave(1,:),Xsave(2,:))
-plot(Xpred(1,:),Xpred(2,:))
 plot(p(:,1),p(:,2))
-legend({'Medida','Estimacion','Real'})
+legend({'Medida','Trayectoria medida','Trayectoria real'})
+title('Trayectoria')
+saveas(gcf, 'trayectoria.png')
 
 %Autocorrelacion de la innovacion
 figure(2)
 subplot(2,1,1)
 [c,lags] = xcov(E(1,:));
 stem(lags,c)
+title('Autocorrelacion de la innovación en x')
 subplot(2,1,2)
 [c,lags] = xcov(E(2,:));
 stem(lags,c)
-
+title('Autocorrelacion de la innovación en y')
+saveas(gcf, 'innovacion.png')
 
 
 

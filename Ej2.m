@@ -195,5 +195,9 @@ xlim([-5000 -3000])
 saveas(gcf, 'trayectoria_aumento.png')
 
 
-
+e_x = sqrt(sum((transpose(Xsave(1,:)) - p(:,1)).^2))
+e_y = sqrt(sum((transpose(Xsave(2,:)) - p(:,2)).^2))
+last_diff = transpose(Xsave(2,end)) - p(end,2)
+max_diff_x = max(transpose(Xsave(1,:)) - p(:,1))
+max_diff_y = max(transpose(Xsave(2,:)) - p(:,2))
 
